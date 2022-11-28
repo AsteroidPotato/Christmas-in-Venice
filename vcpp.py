@@ -1,7 +1,9 @@
 import struct
 import pyaudio
 import pvporcupine
+import pvrhino
 import speech_recognition as sr
+import time
 
 import commands
 
@@ -9,7 +11,12 @@ porcupine = None
 pa = None
 audio_stream = None
 
-porcupine = pvporcupine.create(keywords=["computer", "jarvis"], access_key= "WnYuSEJ+OsuCObjZ3C8rBJ6kkKoH+Z2qTgLh3YFCehiUGlEQzGT32Q==")
+kws = ["computer", "jarvis"]
+porcupine = pvporcupine.create(keywords=kws, access_key= "WnYuSEJ+OsuCObjZ3C8rBJ6kkKoH+Z2qTgLh3YFCehiUGlEQzGT32Q==")
+
+rhino = pvrhino.create(
+   access_key="WnYuSEJ+OsuCObjZ3C8rBJ6kkKoH+Z2qTgLh3YFCehiUGlEQzGT32Q==",
+   context_path= "Christmas-in-Venice_en_mac_v2_1_0.rhn")
 
 pa = pyaudio.PyAudio()
 
@@ -24,12 +31,18 @@ while True:
     pcm = struct.unpack_from("h" * porcupine.frame_length, pcm)
 
     keyword_index = porcupine.process(pcm)
-
-    if keyword_index >= 0:
-        print("Hotword Detected")
-        print(keyword_index)
-        pcm = audio_stream.read(porcupine.frame_length)
-        pcm = struct.unpack_from("h" * porcupine.frame_length, pcm)
-
+    print(keyword_index)
+    isTrue = rhino.process(pcm)
+    if isTrue:
+        inference = rhino.get_inference()
+        if inference.is_understood:
+            intent = inference.intent
+            slots = inference.slots
+            print(kws[keyword_index])
+            print(intent)
+            print(slots)
+        else:
+            print("not understood")
+        
 
 
