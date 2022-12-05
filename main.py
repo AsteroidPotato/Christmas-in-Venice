@@ -1,10 +1,14 @@
 import numpy as np
 import time
-from stepper_thread import Stepper
+from servo_thread import Servo
+import RPi.GPIO as GPIO
 
-test = Stepper()
+test = Servo(7)
 
 test.start()
-
-while True:
-    test.rest = float(input("rest step:"))
+try:
+    while True:
+        test.index = int(input("index:"))
+except:
+    test.pwm.stop()
+    GPIO.cleanup()

@@ -1,36 +1,33 @@
-import speech_recognition as sr
+import numpy as np
 import time
+from stepper_thread import Stepper
+from servo_thread import Servo
+import RPi.GPIO as GPIO
 
-def into(wake):
-    rec = sr.Recognizer()
-    mic = sr.Microphone()
-    with mic as source:
-        rec.adjust_for_ambient_noise(source)
+speed_dict = {"faster": 1, "rockier" : 1, "slower": 0, "calmer": 0}
+pin = 26
+GPIO.setmode(GPIO.BCM)
 
-    stop_thread = rec.listen_in_background(mic, parse_phrase)
-    time.sleep(5)
-    stop_thread(wait_for_stop=True)
-    
+GPIO.setup(pin, GPIO.OUT)
 
-def parse_phrase(recognizer, audio):
-    print("callback")
-    try:
-        val = recognizer.recognize_google(audio)
-        print(val)
-        for key, value in command_dictionary1:
-            if key in val:
-                value()
-    except sr.UnknownValueError:
-        print("UnknownValueError caught")
-        
-def test_comm():
-    print("the test was successful")
+motor = GPIO.PWM(pin, 50)
+stepper = Stepper()
+stepper.start()
+ht = Servo(7)
+ht.start()
 
-command_dictionary1 = {'test' : test_comm }
-command_dictionary2 = {}
 
-def find(string):
-    #TEST: print("searching dictionary")
-    for key in command_dictionary.keys():
-        if key in string:
-            command_dictionary[key]()
+def changeRowSpeed(update):
+    print("changeRowSpeed called")
+    if update["com"] == "Santa":
+        stepper.updateSpeed(speed_dict[update["speed"]])
+def changeFishState(update):
+    motor.ChangeDutyCycle(30)
+
+def changeWaterState(update):
+    print("changeWaterState called")
+    if update["com"] == "Santa":
+        #print("correct commander")
+        ht.updateSpeed(speed_dict[update["rock"]])
+def sayHI(update):
+    pass
