@@ -21,7 +21,7 @@ class Arm(threading.Thread):
 
         self.pwm.start(self.center)
 
-        self.range = 2
+        self.range = 4
         self.period = [-1, 1, .5, .2, .1]
         self.index = 0
         
@@ -36,7 +36,6 @@ class Arm(threading.Thread):
                         except ValueError:
                             self.pwm.ChangeDutyCycle(self.center - self.range*i)
                             time.sleep(self.period[1]/10)
-                            print("ValueError")
                         except KeyboardInterrupt:
                             self.pwm.stop()
                             GPIO.cleanup()
@@ -48,7 +47,6 @@ class Arm(threading.Thread):
                         except ValueError:
                             self.pwm.ChangeDutyCycle(self.center - self.range*i)
                             time.sleep(self.period[1]/10)
-                            print("ValueError")
                         except KeyboardInterrupt:
                             self.pwm.stop()
                             GPIO.cleanup()
@@ -68,6 +66,7 @@ class Arm(threading.Thread):
             self.index += 1
         elif pm == 0 and self.index >0:
             self.index -= 1
-    def updateRange(self, ranger):
-        self.range = ranger
-    
+    def getIndex(self):
+        return self.index
+    def setIndex(self, ind):
+        self.index = ind

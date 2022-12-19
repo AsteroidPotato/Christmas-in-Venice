@@ -39,3 +39,7 @@ class Stepper(threading.Thread):
             self.index += 1
         elif pm == 0 and self.index >0:
             self.index -= 1
+    def getIndex(self):
+        return self.index
+    def setIndex(self, ind):
+        self.index = ind

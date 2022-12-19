@@ -35,7 +35,7 @@ try:
                 func = getattr(commands, intent)
                 func(slots)
             else:
-                print("not understood")
+                pass
 
 except KeyboardInterrupt:
     print("vcpp interrupted")
