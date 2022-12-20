@@ -3,17 +3,19 @@ import time
 import numpy as np
 import RPi.GPIO as GPIO
 
-
+"""Class to rotate the fish servo back and forth"""
 class Fish(threading.Thread):
+        """center is the duty cycle value for the servo's center mark
+        pin is the GPIO pin for the servo
+        ranger is the range of motion"""
 	def __init__(self, center, ranger, pin, *args, **kwargs):
 		threading.Thread.__init__(self)
 		self._args = args
 		self._kwargs = kwargs
 		self._lock = kwargs.get("lock", None)
-		self.center = center
 
-
-		self.pin = pin
+		self.center = center # centered duty cycle calibrated to each servo
+                self.pin = pin # GPIO pin for servo
 
 		GPIO.setmode(GPIO.BCM)
 		GPIO.setup(self.pin, GPIO.OUT)
@@ -21,12 +23,18 @@ class Fish(threading.Thread):
 
 		self.pwm.start(self.center)
 
-		self.range = ranger
-		self.period = .5
-		self.runvar = 0
+		self.range = ranger # range of motion for the servo (in duty cycle)
+		self.period = .5 # speed of servo
+		self.runvar = 0 # start with no rotation
+
+"""The inherited run method from threading.Thread. This runs on
+thread.start() call
+
+This loops through the rocking motion"""
 	def run(self):
 		try:
 			while True:
+                                # while the self.runvar == 1, rock back and forth
 				while self.runvar:
 					for i in np.linspace(0, 1, 10):
 						try:
